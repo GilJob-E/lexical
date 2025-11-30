@@ -1,0 +1,117 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ===== Virtual Environments =====
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.conda/
+
+# ===== IDE / Editor =====
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ===== Testing =====
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# ===== Jupyter Notebook =====
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ===== mypy / type checking =====
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+
+# ===== Logs & Temp =====
+*.log
+*.tmp
+*.temp
+logs/
+temp/
+tmp/
+
+# ===== OS Generated =====
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===== Project Specific =====
+.claude/
+examples/
+
+# ===== Data & Models =====
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.pt
+*.pth
+*.onnx
+data/
+models/
+*.model
+
+# ===== Audio/Video (for multimodal integration) =====
+*.mp4
+*.mp3
+*.wav
+*.avi
+*.mov
+*.mkv
+
+# ===== Secrets & Config =====
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets.json
+config.local.yaml
+
+.claude/
