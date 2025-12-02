@@ -43,9 +43,30 @@ print(f"Overall Score: {result.scores.overall:.1f}")
 print(f"Recommend Hiring: {result.scores.recommend_hiring:.1f}")
 ```
 
-## 추출 특성 (28개)
+## 추출 특성
 
-### Speaking Rate (5개)
+### Target Features (8개) - 점수 예측에 사용
+
+논문(Naim et al. 2018) SVR 모델의 Top 20에 포함된 핵심 특성입니다.
+
+| 특성 | 설명 | 카테고리 |
+|------|------|----------|
+| wpsec | 초당 형태소 수 | Speaking Rate |
+| upsec | 초당 고유 형태소 수 | Speaking Rate |
+| fpsec | 초당 필러 수 | Speaking Rate |
+| quantifier_ratio | 수량사 비율 | Lexical |
+| we_ratio | 1인칭 복수 대명사 비율 | Pronoun |
+| work_ratio | 업무 관련어 비율 | Lexical |
+| adverb_ratio | 부사 비율 | POS |
+| preposition_ratio | 부사격 조사 비율 | POS |
+
+> 📊 **통계 분석**: [docs/FEATURE_STATISTICS.md](docs/FEATURE_STATISTICS.md) - 76,100개 샘플 기반 분포 및 Z-Score 해석
+>
+> 📋 **가중치 상세**: [docs/WEIGHTS_MAPPING.md](docs/WEIGHTS_MAPPING.md) - SVR 가중치 및 정규화 범위
+
+### 전체 추출 특성 (28개)
+
+#### Speaking Rate (5개)
 | 특성 | 설명 |
 |------|------|
 | wpsec | 초당 형태소 수 |
@@ -54,14 +75,14 @@ print(f"Recommend Hiring: {result.scores.recommend_hiring:.1f}")
 | wc | 총 형태소 수 |
 | uc | 고유 형태소 수 |
 
-### Pronouns (3개)
+#### Pronouns (3개)
 | 특성 | 설명 |
 |------|------|
 | i_ratio | 1인칭 단수 대명사 비율 (나, 저) |
 | we_ratio | 1인칭 복수 대명사 비율 (우리, 저희) |
 | they_ratio | 3인칭 복수 대명사 비율 (그들) |
 
-### POS Features (6개)
+#### POS Features (6개)
 | 특성 | 설명 |
 |------|------|
 | article_ratio | 관형사 비율 |
@@ -71,7 +92,7 @@ print(f"Recommend Hiring: {result.scores.recommend_hiring:.1f}")
 | conjunction_ratio | 접속 조사 비율 |
 | number_ratio | 수사 비율 |
 
-### Emotion (5개)
+#### Emotion (5개)
 | 특성 | 설명 |
 |------|------|
 | pos_emotion_ratio | 긍정 감정어 비율 |
@@ -80,14 +101,14 @@ print(f"Recommend Hiring: {result.scores.recommend_hiring:.1f}")
 | anger_ratio | 분노 관련어 비율 |
 | sadness_ratio | 슬픔 관련어 비율 |
 
-### Cognitive (3개)
+#### Cognitive (3개)
 | 특성 | 설명 |
 |------|------|
 | cognitive_ratio | 인지 과정어 비율 |
 | inhibition_ratio | 억제 관련어 비율 |
 | perceptual_ratio | 지각 과정어 비율 |
 
-### Misc (6개)
+#### Misc (6개)
 | 특성 | 설명 |
 |------|------|
 | nonfluency_ratio | 비유창성 마커 비율 |
