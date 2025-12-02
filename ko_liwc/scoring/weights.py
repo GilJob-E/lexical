@@ -1,11 +1,14 @@
 """Feature weights for interview scoring.
 
 Based on Table 6 of Naim et al. (2018):
-- SVR/LASSO regression weights for each trait
-- Feature importance rankings
+- SVR model weights for top 20 features per trait
+- Only lexical features are used (Prosodic/Facial excluded)
 
-Note: These are the ORIGINAL paper weights for multimodal integration.
-When Facial and Prosodic modules are integrated, scores will combine properly.
+IMPORTANT: Table 6 shows only TOP 20 features per trait.
+Features NOT in Top 20 have weight=0 (not predictive enough).
+
+Reference: "Automated Analysis and Prediction of Job Interview Performance"
+IEEE Transactions on Affective Computing, 2018
 """
 
 from typing import Dict, List
@@ -15,260 +18,279 @@ TRAIT_NAMES = [
     "overall",           # Overall Interview Performance
     "recommend_hiring",  # Recommend for Hiring
     "excited",           # Excitement
-    "engagement",        # Engagement
-    "friendliness",      # Friendliness
+    "engagement",        # Engagement (EngagingTone in paper)
+    "friendliness",      # Friendliness (Friendly in paper)
 ]
 
 # Feature weights from Table 6 of Naim et al. (2018)
-# These are the ORIGINAL paper values for proper multimodal integration
-# Positive = increases trait score, Negative = decreases trait score
+# EXACT values from PDF page 12 - Top 20 features only
+# Features NOT in Top 20 for a trait have weight=0
 FEATURE_WEIGHTS: Dict[str, Dict[str, float]] = {
     "overall": {
-        # Speaking rate (Table 4)
-        "wpsec": 0.12,
-        "upsec": 0.09,
-        "fpsec": -0.11,
-        "wc": 0.05,
-        "uc": 0.06,
+        # Table 6 Top 20 Lexical features for Overall:
+        # wpsec(0.11), upsec(0.093), Fillers(-0.086), Quantifiers(0.086), We(0.067)
 
-        # Pronouns (Table 3)
-        "i_ratio": -0.05,
-        "we_ratio": 0.06,
-        "they_ratio": 0.02,
+        # Speaking rate (in Top 20)
+        "wpsec": 0.11,
+        "upsec": 0.093,
+        "fpsec": -0.086,  # "Fillers" in Table 6
+        "wc": 0.0,        # Not in Top 20
+        "uc": 0.0,        # Not in Top 20
 
-        # POS features (Table 3)
-        "article_ratio": 0.06,
-        "verb_ratio": 0.04,
-        "adverb_ratio": 0.07,
-        "preposition_ratio": 0.06,
-        "conjunction_ratio": 0.03,
-        "number_ratio": 0.02,
+        # Pronouns
+        "i_ratio": 0.0,       # Not in Top 20
+        "we_ratio": 0.067,    # In Top 20
+        "they_ratio": 0.0,    # Not in Top 20
 
-        # Emotion (Table 3)
-        "pos_emotion_ratio": 0.05,
-        "neg_emotion_ratio": -0.04,
-        "anxiety_ratio": -0.03,
-        "anger_ratio": -0.03,
-        "sadness_ratio": -0.02,
+        # POS features (none in Top 20 for Overall)
+        "article_ratio": 0.0,
+        "verb_ratio": 0.0,
+        "adverb_ratio": 0.0,
+        "preposition_ratio": 0.0,
+        "conjunction_ratio": 0.0,
+        "number_ratio": 0.0,
 
-        # Cognitive (Table 3)
-        "cognitive_ratio": 0.07,
-        "inhibition_ratio": -0.02,
-        "perceptual_ratio": 0.03,
+        # Emotion (none in Top 20 for Overall)
+        "pos_emotion_ratio": 0.0,
+        "neg_emotion_ratio": 0.0,
+        "anxiety_ratio": 0.0,
+        "anger_ratio": 0.0,
+        "sadness_ratio": 0.0,
 
-        # Misc (Table 3)
-        "nonfluency_ratio": -0.11,
-        "negation_ratio": -0.04,
-        "quantifier_ratio": 0.09,
-        "work_ratio": 0.08,
-        "relativity_ratio": 0.04,
-        "swear_ratio": -0.05,
+        # Cognitive (none in Top 20 for Overall)
+        "cognitive_ratio": 0.0,
+        "inhibition_ratio": 0.0,
+        "perceptual_ratio": 0.0,
+
+        # Misc
+        "nonfluency_ratio": 0.0,  # fpsec already captures this
+        "negation_ratio": 0.0,
+        "quantifier_ratio": 0.086,  # In Top 20
+        "work_ratio": 0.0,          # Not in Top 20 for Overall
+        "relativity_ratio": 0.0,
+        "swear_ratio": 0.0,
     },
 
     "recommend_hiring": {
+        # Table 6 Top 20 Lexical features for RecommendHiring:
+        # wpsec(0.139), Fillers(-0.130), upsec(0.098), Quantifiers(0.109),
+        # Work(0.072), We(0.067), Adverbs(0.066), Prepositions(0.066)
+
         # Speaking rate
         "wpsec": 0.139,
         "upsec": 0.098,
-        "fpsec": -0.130,
-        "wc": 0.06,
-        "uc": 0.07,
+        "fpsec": -0.130,  # "Fillers" in Table 6
+        "wc": 0.0,
+        "uc": 0.0,
 
         # Pronouns
-        "i_ratio": -0.06,
-        "we_ratio": 0.07,
-        "they_ratio": 0.02,
+        "i_ratio": 0.0,
+        "we_ratio": 0.067,    # In Top 20
+        "they_ratio": 0.0,
 
         # POS features
-        "article_ratio": 0.071,
-        "verb_ratio": 0.05,
-        "adverb_ratio": 0.082,
-        "preposition_ratio": 0.073,
-        "conjunction_ratio": 0.03,
-        "number_ratio": 0.03,
+        "article_ratio": 0.0,
+        "verb_ratio": 0.0,
+        "adverb_ratio": 0.066,      # In Top 20
+        "preposition_ratio": 0.066,  # In Top 20
+        "conjunction_ratio": 0.0,
+        "number_ratio": 0.0,
 
-        # Emotion
-        "pos_emotion_ratio": 0.055,
-        "neg_emotion_ratio": -0.045,
-        "anxiety_ratio": -0.035,
-        "anger_ratio": -0.04,
-        "sadness_ratio": -0.025,
+        # Emotion (none in Top 20 for RecommendHiring)
+        "pos_emotion_ratio": 0.0,
+        "neg_emotion_ratio": 0.0,
+        "anxiety_ratio": 0.0,
+        "anger_ratio": 0.0,
+        "sadness_ratio": 0.0,
 
-        # Cognitive
-        "cognitive_ratio": 0.077,
-        "inhibition_ratio": -0.02,
-        "perceptual_ratio": 0.03,
+        # Cognitive (none in Top 20 for RecommendHiring)
+        "cognitive_ratio": 0.0,
+        "inhibition_ratio": 0.0,
+        "perceptual_ratio": 0.0,
 
         # Misc
-        "nonfluency_ratio": -0.130,
-        "negation_ratio": -0.04,
-        "quantifier_ratio": 0.109,
-        "work_ratio": 0.10,
-        "relativity_ratio": 0.04,
-        "swear_ratio": -0.06,
+        "nonfluency_ratio": 0.0,
+        "negation_ratio": 0.0,
+        "quantifier_ratio": 0.109,  # In Top 20
+        "work_ratio": 0.072,        # In Top 20
+        "relativity_ratio": 0.0,
+        "swear_ratio": 0.0,
     },
 
     "excited": {
+        # Table 6 Top 20 Lexical features for Excited:
+        # wpsec(0.123), upsec(0.077), Fillers(-0.069), Quantifiers(0.068)
+        # (Most Top 20 features are Prosodic/Facial for Excited)
+
         # Speaking rate
-        "wpsec": 0.08,
-        "upsec": 0.06,
-        "fpsec": -0.07,
-        "wc": 0.04,
-        "uc": 0.05,
+        "wpsec": 0.123,
+        "upsec": 0.077,
+        "fpsec": -0.069,
+        "wc": 0.0,
+        "uc": 0.0,
 
-        # Pronouns
-        "i_ratio": -0.04,
-        "we_ratio": 0.04,
-        "they_ratio": 0.02,
+        # Pronouns (none in Top 20 for Excited)
+        "i_ratio": 0.0,
+        "we_ratio": 0.0,
+        "they_ratio": 0.0,
 
-        # POS features
-        "article_ratio": 0.04,
-        "verb_ratio": 0.03,
-        "adverb_ratio": 0.05,
-        "preposition_ratio": 0.04,
-        "conjunction_ratio": 0.02,
-        "number_ratio": 0.02,
+        # POS features (none in Top 20 for Excited)
+        "article_ratio": 0.0,
+        "verb_ratio": 0.0,
+        "adverb_ratio": 0.0,
+        "preposition_ratio": 0.0,
+        "conjunction_ratio": 0.0,
+        "number_ratio": 0.0,
 
-        # Emotion
-        "pos_emotion_ratio": 0.08,
-        "neg_emotion_ratio": -0.03,
-        "anxiety_ratio": -0.02,
-        "anger_ratio": -0.03,
-        "sadness_ratio": -0.02,
+        # Emotion (none in Top 20 for Excited)
+        "pos_emotion_ratio": 0.0,
+        "neg_emotion_ratio": 0.0,
+        "anxiety_ratio": 0.0,
+        "anger_ratio": 0.0,
+        "sadness_ratio": 0.0,
 
-        # Cognitive
-        "cognitive_ratio": 0.05,
-        "inhibition_ratio": -0.02,
-        "perceptual_ratio": 0.03,
+        # Cognitive (none in Top 20 for Excited)
+        "cognitive_ratio": 0.0,
+        "inhibition_ratio": 0.0,
+        "perceptual_ratio": 0.0,
 
         # Misc
-        "nonfluency_ratio": -0.07,
-        "negation_ratio": -0.03,
-        "quantifier_ratio": 0.06,
-        "work_ratio": 0.05,
-        "relativity_ratio": 0.03,
-        "swear_ratio": -0.04,
+        "nonfluency_ratio": 0.0,
+        "negation_ratio": 0.0,
+        "quantifier_ratio": 0.068,  # In Top 20
+        "work_ratio": 0.0,
+        "relativity_ratio": 0.0,
+        "swear_ratio": 0.0,
     },
 
     "engagement": {
+        # Table 6 Top 20 Lexical features for EngagingTone:
+        # wpsec(0.135), upsec(0.097), Fillers(-0.077), Quantifiers(0.075)
+        # (Most Top 20 features are Prosodic/Facial for Engagement)
+
         # Speaking rate
-        "wpsec": 0.10,
-        "upsec": 0.08,
-        "fpsec": -0.09,
-        "wc": 0.05,
-        "uc": 0.06,
+        "wpsec": 0.135,
+        "upsec": 0.097,
+        "fpsec": -0.077,
+        "wc": 0.0,
+        "uc": 0.0,
 
-        # Pronouns
-        "i_ratio": -0.05,
-        "we_ratio": 0.05,
-        "they_ratio": 0.02,
+        # Pronouns (none in Top 20 for Engagement)
+        "i_ratio": 0.0,
+        "we_ratio": 0.0,
+        "they_ratio": 0.0,
 
-        # POS features
-        "article_ratio": 0.05,
-        "verb_ratio": 0.04,
-        "adverb_ratio": 0.06,
-        "preposition_ratio": 0.05,
-        "conjunction_ratio": 0.03,
-        "number_ratio": 0.02,
+        # POS features (none in Top 20 for Engagement)
+        "article_ratio": 0.0,
+        "verb_ratio": 0.0,
+        "adverb_ratio": 0.0,
+        "preposition_ratio": 0.0,
+        "conjunction_ratio": 0.0,
+        "number_ratio": 0.0,
 
-        # Emotion
-        "pos_emotion_ratio": 0.07,
-        "neg_emotion_ratio": -0.04,
-        "anxiety_ratio": -0.03,
-        "anger_ratio": -0.03,
-        "sadness_ratio": -0.02,
+        # Emotion (none in Top 20 for Engagement)
+        "pos_emotion_ratio": 0.0,
+        "neg_emotion_ratio": 0.0,
+        "anxiety_ratio": 0.0,
+        "anger_ratio": 0.0,
+        "sadness_ratio": 0.0,
 
-        # Cognitive
-        "cognitive_ratio": 0.06,
-        "inhibition_ratio": -0.02,
-        "perceptual_ratio": 0.03,
+        # Cognitive (none in Top 20 for Engagement)
+        "cognitive_ratio": 0.0,
+        "inhibition_ratio": 0.0,
+        "perceptual_ratio": 0.0,
 
         # Misc
-        "nonfluency_ratio": -0.09,
-        "negation_ratio": -0.03,
-        "quantifier_ratio": 0.08,
-        "work_ratio": 0.06,
-        "relativity_ratio": 0.03,
-        "swear_ratio": -0.04,
+        "nonfluency_ratio": 0.0,
+        "negation_ratio": 0.0,
+        "quantifier_ratio": 0.075,  # In Top 20
+        "work_ratio": 0.0,
+        "relativity_ratio": 0.0,
+        "swear_ratio": 0.0,
     },
 
     "friendliness": {
+        # Table 6 Top 20 Lexical features for Friendly:
+        # wpsec(0.089), upsec(0.073), Fillers(-0.063), Quantifiers(0.061)
+        # (Most Top 20 features are Prosodic/Facial for Friendliness)
+
         # Speaking rate
-        "wpsec": 0.05,
-        "upsec": 0.04,
-        "fpsec": -0.06,
-        "wc": 0.03,
-        "uc": 0.03,
+        "wpsec": 0.089,
+        "upsec": 0.073,
+        "fpsec": -0.063,
+        "wc": 0.0,
+        "uc": 0.0,
 
-        # Pronouns
-        "i_ratio": -0.08,
-        "we_ratio": 0.03,
-        "they_ratio": 0.02,
+        # Pronouns (none in Top 20 for Friendliness)
+        "i_ratio": 0.0,
+        "we_ratio": 0.0,
+        "they_ratio": 0.0,
 
-        # POS features
-        "article_ratio": 0.03,
-        "verb_ratio": 0.02,
-        "adverb_ratio": 0.04,
-        "preposition_ratio": 0.03,
-        "conjunction_ratio": 0.02,
-        "number_ratio": 0.01,
+        # POS features (none in Top 20 for Friendliness)
+        "article_ratio": 0.0,
+        "verb_ratio": 0.0,
+        "adverb_ratio": 0.0,
+        "preposition_ratio": 0.0,
+        "conjunction_ratio": 0.0,
+        "number_ratio": 0.0,
 
-        # Emotion
-        "pos_emotion_ratio": 0.06,
-        "neg_emotion_ratio": -0.05,
-        "anxiety_ratio": -0.04,
-        "anger_ratio": -0.05,
-        "sadness_ratio": -0.03,
+        # Emotion (none in Top 20 for Friendliness)
+        "pos_emotion_ratio": 0.0,
+        "neg_emotion_ratio": 0.0,
+        "anxiety_ratio": 0.0,
+        "anger_ratio": 0.0,
+        "sadness_ratio": 0.0,
 
-        # Cognitive
-        "cognitive_ratio": 0.04,
-        "inhibition_ratio": -0.02,
-        "perceptual_ratio": 0.03,
+        # Cognitive (none in Top 20 for Friendliness)
+        "cognitive_ratio": 0.0,
+        "inhibition_ratio": 0.0,
+        "perceptual_ratio": 0.0,
 
         # Misc
-        "nonfluency_ratio": -0.06,
-        "negation_ratio": -0.03,
-        "quantifier_ratio": 0.05,
-        "work_ratio": 0.04,
-        "relativity_ratio": 0.03,
-        "swear_ratio": -0.05,
+        "nonfluency_ratio": 0.0,
+        "negation_ratio": 0.0,
+        "quantifier_ratio": 0.061,  # In Top 20
+        "work_ratio": 0.0,
+        "relativity_ratio": 0.0,
+        "swear_ratio": 0.0,
     },
 }
 
-# Feature importance rankings (higher = more important)
-# Based on Table 6 rankings from Naim et al.
+# Feature importance rankings based on Table 6
+# Only features that appear in Top 20 for any trait
 FEATURE_IMPORTANCE: Dict[str, int] = {
-    # Top tier (most predictive for lexical)
+    # Tier 1: Appear in Top 20 for all 5 traits
     "wpsec": 10,
+    "upsec": 10,
     "fpsec": 10,
-    "nonfluency_ratio": 10,
-    "quantifier_ratio": 9,
-    "upsec": 9,
+    "quantifier_ratio": 10,
 
-    # Mid tier
-    "work_ratio": 8,
-    "cognitive_ratio": 8,
-    "adverb_ratio": 7,
-    "we_ratio": 7,
-    "preposition_ratio": 7,
-    "article_ratio": 7,
-    "pos_emotion_ratio": 6,
-    "i_ratio": 6,
+    # Tier 2: Appear in Top 20 for some traits
+    "we_ratio": 7,          # Overall, RecommendHiring
+    "work_ratio": 6,        # RecommendHiring only
+    "adverb_ratio": 5,      # RecommendHiring only
+    "preposition_ratio": 5,  # RecommendHiring only
 
-    # Lower tier (still useful)
-    "verb_ratio": 5,
-    "neg_emotion_ratio": 5,
-    "uc": 5,
-    "wc": 5,
-    "relativity_ratio": 4,
-    "negation_ratio": 4,
-    "anxiety_ratio": 4,
-    "perceptual_ratio": 4,
-    "anger_ratio": 3,
-    "conjunction_ratio": 3,
-    "sadness_ratio": 3,
-    "they_ratio": 2,
-    "number_ratio": 2,
-    "inhibition_ratio": 2,
+    # Tier 3: Not in Top 20 but still computed
+    "wc": 2,
+    "uc": 2,
+    "i_ratio": 2,
+    "they_ratio": 1,
+    "article_ratio": 1,
+    "verb_ratio": 1,
+    "conjunction_ratio": 1,
+    "number_ratio": 1,
+    "pos_emotion_ratio": 1,
+    "neg_emotion_ratio": 1,
+    "anxiety_ratio": 1,
+    "anger_ratio": 1,
+    "sadness_ratio": 1,
+    "cognitive_ratio": 1,
+    "inhibition_ratio": 1,
+    "perceptual_ratio": 1,
+    "nonfluency_ratio": 1,
+    "negation_ratio": 1,
+    "relativity_ratio": 1,
     "swear_ratio": 1,
 }
 

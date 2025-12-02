@@ -161,6 +161,54 @@ result = analyze("면접 텍스트", duration=30.0)
 detailed = analyze("면접 텍스트", duration=30.0, detailed=True)
 ```
 
+## 정규화 (Normalization)
+
+본 패키지는 두 가지 정규화 방식을 지원합니다.
+
+### Z-Score 정규화 (권장)
+
+논문(Naim et al. 2018)에서 SVR 모델에 권장하는 방식입니다.
+
+```python
+from ko_liwc import InterviewAnalyzer
+from ko_liwc.scoring import ZScoreNormalizer
+from ko_liwc.scoring.normalizer import DEFAULT_FEATURE_STATS
+
+analyzer = InterviewAnalyzer()
+features = analyzer.extract_features(text, duration_seconds)
+
+# Z-Score 정규화
+normalizer = ZScoreNormalizer(preset_stats=DEFAULT_FEATURE_STATS)
+z_scores = normalizer.transform(features)
+```
+
+**통계 기반**: 76,100개 한국어 면접 데이터 (2025-12-02 계산)
+
+| Feature | Mean (μ) | Std (σ) |
+|---------|----------|---------|
+| wpsec | 2.859 | 0.578 |
+| upsec | 1.281 | 0.258 |
+| fpsec | 0.289 | 0.104 |
+| quantifier_ratio | 0.221 | 0.039 |
+| we_ratio | 0.001 | 0.004 |
+| work_ratio | 0.116 | 0.031 |
+| adverb_ratio | 0.055 | 0.022 |
+| preposition_ratio | 0.042 | 0.015 |
+
+> 상세 통계 및 시각화는 [docs/FEATURE_STATISTICS.md](docs/FEATURE_STATISTICS.md) 참조
+
+### Min-Max 정규화
+
+[0, 1] 범위로 클리핑하는 기존 방식입니다.
+
+```python
+from ko_liwc.scoring import MinMaxNormalizer
+from ko_liwc.scoring.normalizer import DEFAULT_FEATURE_RANGES
+
+normalizer = MinMaxNormalizer(preset_ranges=DEFAULT_FEATURE_RANGES)
+normalized = normalizer.transform(features)
+```
+
 ## 프로젝트 구조
 
 ```

@@ -16,77 +16,58 @@
 
 ## 2. 원논문 가중치 (Table 6)
 
-### 2.1 Lexical 피처 가중치
+> **중요**: Table 6은 각 trait별 **Top 20 피처**만 표시합니다.
+> Top 20에 포함되지 않은 피처는 weight=0으로 처리합니다.
+> 아래 값들은 PDF page 12에서 직접 추출한 정확한 SVR 모델 가중치입니다.
 
-#### Speaking Rate Features (Table 4)
+### 2.1 Lexical 피처 가중치 (Table 6 Top 20 기준)
+
+#### Core Lexical Features (모든 trait의 Top 20에 포함)
 | Feature | Overall | Rec.Hiring | Excited | Engagement | Friendly | 설명 |
 |---------|---------|------------|---------|------------|----------|------|
-| wpsec | 0.12 | 0.139 | 0.08 | 0.10 | 0.05 | 초당 단어 수 |
-| upsec | 0.09 | 0.098 | 0.06 | 0.08 | 0.04 | 초당 고유 단어 수 |
-| fpsec | -0.11 | -0.130 | -0.07 | -0.09 | -0.06 | 초당 필러 수 |
-| wc | 0.05 | 0.06 | 0.04 | 0.05 | 0.03 | 총 단어 수 |
-| uc | 0.06 | 0.07 | 0.05 | 0.06 | 0.03 | 고유 단어 수 |
+| wpsec | **0.11** | **0.139** | **0.123** | **0.135** | **0.089** | 초당 단어 수 |
+| upsec | **0.093** | **0.098** | **0.077** | **0.097** | **0.073** | 초당 고유 단어 수 |
+| fpsec | **-0.086** | **-0.130** | **-0.069** | **-0.077** | **-0.063** | 초당 필러 수 (Fillers) |
+| quantifier_ratio | **0.086** | **0.109** | **0.068** | **0.075** | **0.061** | 수량사 비율 |
 
-#### Pronoun Features (Table 3)
+#### Partial Lexical Features (일부 trait의 Top 20에 포함)
 | Feature | Overall | Rec.Hiring | Excited | Engagement | Friendly | 설명 |
 |---------|---------|------------|---------|------------|----------|------|
-| i_ratio | -0.05 | -0.06 | -0.04 | -0.05 | -0.08 | 1인칭 단수 비율 |
-| we_ratio | 0.06 | 0.07 | 0.04 | 0.05 | 0.03 | 1인칭 복수 비율 |
-| they_ratio | 0.02 | 0.02 | 0.02 | 0.02 | 0.02 | 3인칭 복수 비율 |
+| we_ratio | **0.067** | **0.067** | 0 | 0 | 0 | 1인칭 복수 비율 |
+| work_ratio | 0 | **0.072** | 0 | 0 | 0 | 업무 관련어 비율 |
+| adverb_ratio | 0 | **0.066** | 0 | 0 | 0 | 부사 비율 |
+| preposition_ratio | 0 | **0.066** | 0 | 0 | 0 | 전치사(조사) 비율 |
 
-#### POS Features (Table 3)
-| Feature | Overall | Rec.Hiring | Excited | Engagement | Friendly | 설명 |
-|---------|---------|------------|---------|------------|----------|------|
-| article_ratio | 0.06 | 0.071 | 0.04 | 0.05 | 0.03 | 관형사 비율 |
-| verb_ratio | 0.04 | 0.05 | 0.03 | 0.04 | 0.02 | 동사 비율 |
-| adverb_ratio | 0.07 | 0.082 | 0.05 | 0.06 | 0.04 | 부사 비율 |
-| preposition_ratio | 0.06 | 0.073 | 0.04 | 0.05 | 0.03 | 전치사(조사) 비율 |
-| conjunction_ratio | 0.03 | 0.03 | 0.02 | 0.03 | 0.02 | 접속사 비율 |
-| number_ratio | 0.02 | 0.03 | 0.02 | 0.02 | 0.01 | 수사 비율 |
+#### Non-Top 20 Features (weight=0)
+아래 피처들은 모든 trait에서 Top 20에 포함되지 않아 weight=0입니다:
+- Speaking rate: wc, uc
+- Pronouns: i_ratio, they_ratio
+- POS: article_ratio, verb_ratio, conjunction_ratio, number_ratio
+- Emotion: pos_emotion_ratio, neg_emotion_ratio, anxiety_ratio, anger_ratio, sadness_ratio
+- Cognitive: cognitive_ratio, inhibition_ratio, perceptual_ratio
+- Misc: nonfluency_ratio, negation_ratio, relativity_ratio, swear_ratio
 
-#### Emotion Features (Table 3)
-| Feature | Overall | Rec.Hiring | Excited | Engagement | Friendly | 설명 |
-|---------|---------|------------|---------|------------|----------|------|
-| pos_emotion_ratio | 0.05 | 0.055 | 0.08 | 0.07 | 0.06 | 긍정 감정어 비율 |
-| neg_emotion_ratio | -0.04 | -0.045 | -0.03 | -0.04 | -0.05 | 부정 감정어 비율 |
-| anxiety_ratio | -0.03 | -0.035 | -0.02 | -0.03 | -0.04 | 불안 관련어 비율 |
-| anger_ratio | -0.03 | -0.04 | -0.03 | -0.03 | -0.05 | 분노 관련어 비율 |
-| sadness_ratio | -0.02 | -0.025 | -0.02 | -0.02 | -0.03 | 슬픔 관련어 비율 |
-
-#### Cognitive Features (Table 3)
-| Feature | Overall | Rec.Hiring | Excited | Engagement | Friendly | 설명 |
-|---------|---------|------------|---------|------------|----------|------|
-| cognitive_ratio | 0.07 | 0.077 | 0.05 | 0.06 | 0.04 | 인지 과정어 비율 |
-| inhibition_ratio | -0.02 | -0.02 | -0.02 | -0.02 | -0.02 | 억제 관련어 비율 |
-| perceptual_ratio | 0.03 | 0.03 | 0.03 | 0.03 | 0.03 | 지각 관련어 비율 |
-
-#### Miscellaneous Features (Table 3)
-| Feature | Overall | Rec.Hiring | Excited | Engagement | Friendly | 설명 |
-|---------|---------|------------|---------|------------|----------|------|
-| nonfluency_ratio | -0.11 | -0.130 | -0.07 | -0.09 | -0.06 | 비유창성 비율 |
-| negation_ratio | -0.04 | -0.04 | -0.03 | -0.03 | -0.03 | 부정어 비율 |
-| quantifier_ratio | 0.09 | 0.109 | 0.06 | 0.08 | 0.05 | 수량사 비율 |
-| work_ratio | 0.08 | 0.10 | 0.05 | 0.06 | 0.04 | 업무 관련어 비율 |
-| relativity_ratio | 0.04 | 0.04 | 0.03 | 0.03 | 0.03 | 관계성 단어 비율 |
-| swear_ratio | -0.05 | -0.06 | -0.04 | -0.04 | -0.05 | 비속어 비율 |
-
-### 2.2 Facial 피처 가중치 (통합 예정)
+### 2.2 Facial 피처 가중치 (Table 6 - 통합 예정)
 
 | Feature | Overall | Rec.Hiring | Excited | Engagement | Friendly | 설명 |
 |---------|---------|------------|---------|------------|----------|------|
-| smile | 0.074 | 0.093 | 0.122 | - | 0.238 | 미소 |
-| nod | - | 0.073 | 0.107 | - | - | 고개 끄덕임 |
-| lipCDt | - | - | - | - | 0.095 | 입꼬리 거리 |
-| eye_contact | ~0.07 | - | - | - | - | 시선 접촉 (추정) |
+| smile | **0.074** | **0.093** | **0.122** | **0.082** | **0.238** | 미소 |
+| nod | **0.068** | 0 | 0 | 0 | 0 | 고개 끄덕임 |
+| LipCDt | 0 | **0.076** | **0.069** | **0.069** | **0.095** | 입꼬리 거리 |
+| LeftEye_h | 0 | **0.069** | 0 | 0 | 0 | 왼쪽 눈 높이 |
 
-### 2.3 Prosodic 피처 가중치 (통합 예정)
+### 2.3 Prosodic 피처 가중치 (Table 6 - 통합 예정)
 
 | Feature | Overall | Rec.Hiring | Excited | Engagement | Friendly | 설명 |
 |---------|---------|------------|---------|------------|----------|------|
-| pitch_mean | 0.095 | - | - | - | - | 평균 피치 |
-| pitch_std | - | - | - | - | - | 피치 표준편차 |
-| intensity_mean | - | - | - | - | - | 평균 강도 |
-| pause_ratio | - | - | - | - | - | 휴지 비율 |
+| avgBand1 | **-0.12** | **-0.132** | **-0.159** | **-0.171** | 0 | 저주파 대역 평균 |
+| avgDurPause | **-0.09** | **-0.094** | 0 | **-0.078** | 0 | 평균 휴지 길이 |
+| percentUnvoiced | **-0.076** | **-0.111** | 0 | **-0.083** | 0 | 무성음 비율 |
+| maxDurPause | **-0.076** | **-0.083** | 0 | 0 | 0 | 최대 휴지 길이 |
+| intensityMax | 0 | 0 | **0.124** | **0.174** | **0.094** | 최대 강도 |
+| intensityMean | 0 | 0 | **0.120** | **0.146** | **0.090** | 평균 강도 |
+| diffIntMaxMin | 0 | 0 | **0.132** | **0.151** | **0.089** | 강도 차이 |
+| mean pitch | 0 | 0 | 0 | 0 | **0.136** | 평균 피치 |
 
 ---
 
@@ -176,9 +157,67 @@ POS_MAPPING = {
 
 ---
 
-## 4. 정규화 범위 (Min-Max)
+## 4. 정규화 (Normalization)
 
-### 4.1 Speaking Rate Features
+> **참고**: 자세한 통계 분석 및 시각화는 [FEATURE_STATISTICS.md](FEATURE_STATISTICS.md) 참조
+
+### 4.1 Z-Score 정규화 (권장)
+
+**76,100개 한국어 면접 데이터 기반 통계** (2025-12-02 계산)
+
+논문(Naim et al. 2018)에서 SVR 모델에 Z-Score 정규화를 사용했습니다.
+
+#### Z-Score 공식
+```python
+z = (x - μ) / σ
+```
+
+#### Target Features 통계 (8개)
+
+| Feature | Mean (μ) | Std (σ) | z=-2 | z=-1 | z=+1 | z=+2 |
+|---------|----------|---------|------|------|------|------|
+| wpsec | 2.859 | 0.578 | 1.70 | 2.28 | 3.44 | 4.01 |
+| upsec | 1.281 | 0.258 | 0.77 | 1.02 | 1.54 | 1.80 |
+| fpsec | 0.289 | 0.104 | 0.08 | 0.18 | 0.39 | 0.50 |
+| quantifier_ratio | 0.221 | 0.039 | 0.14 | 0.18 | 0.26 | 0.30 |
+| we_ratio | 0.001 | 0.004 | 0.00* | 0.00 | 0.01 | 0.01 |
+| work_ratio | 0.116 | 0.031 | 0.05 | 0.09 | 0.15 | 0.18 |
+| adverb_ratio | 0.055 | 0.022 | 0.01 | 0.03 | 0.08 | 0.10 |
+| preposition_ratio | 0.042 | 0.015 | 0.01 | 0.03 | 0.06 | 0.07 |
+
+*음수값은 ratio feature의 경우 0으로 클리핑
+
+#### Z-Score 해석 가이드
+
+![Z-Score Interpretation](images/zscore_interpretation.png)
+
+| Z-Score | 해석 | 백분위 |
+|---------|------|--------|
+| z > +2 | 매우 높음 | P97.7+ |
+| z > +1 | 높음 | P84+ |
+| z ≈ 0 | 평균 | P50 |
+| z < -1 | 낮음 | P16- |
+| z < -2 | 매우 낮음 | P2.3- |
+
+#### Z-Score 사용 예시
+
+```python
+from ko_liwc.scoring import ZScoreNormalizer
+from ko_liwc.scoring.normalizer import DEFAULT_FEATURE_STATS
+
+# 통계 기반 정규화
+normalizer = ZScoreNormalizer(preset_stats=DEFAULT_FEATURE_STATS)
+z_scores = normalizer.transform(features)
+
+# 예시: wpsec=3.0인 경우
+# z = (3.0 - 2.859) / 0.578 = 0.244 (평균보다 약간 높음)
+```
+
+### 4.2 Min-Max 정규화 (하위 호환)
+
+기존 Min-Max 범위 (0-1 스케일링)
+
+#### Speaking Rate Features
 | Feature | Min | Max | 단위 |
 |---------|-----|-----|------|
 | wpsec | 0.0 | 5.0 | 형태소/초 |
@@ -187,7 +226,7 @@ POS_MAPPING = {
 | wc | 0 | 2000 | 형태소 |
 | uc | 0 | 500 | 고유 형태소 |
 
-### 4.2 Ratio Features
+#### Ratio Features
 | Feature | Min | Max | 비고 |
 |---------|-----|-----|------|
 | i_ratio | 0.0 | 0.15 | - |
@@ -214,7 +253,7 @@ POS_MAPPING = {
 | relativity_ratio | 0.0 | 0.12 | - |
 | swear_ratio | 0.0 | 0.01 | - |
 
-### 4.3 정규화 공식
+#### Min-Max 공식
 
 ```python
 normalized = (value - min) / (max - min)

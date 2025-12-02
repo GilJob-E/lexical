@@ -119,16 +119,21 @@ class TestInterviewScorer:
         assert 0 <= score.friendliness <= 100
 
     def test_positive_features_increase_score(self, scorer):
-        """Test that positive features increase scores."""
-        # Low positive emotion
-        low_features = {"pos_emotion_ratio": 0.1}
-        # High positive emotion
-        high_features = {"pos_emotion_ratio": 0.9}
+        """Test that positive features increase scores.
+
+        Note: Using features from Table 6 Top 20 (wpsec, quantifier_ratio)
+        since other features have weight=0.
+        """
+        # Low speaking rate and quantifiers
+        low_features = {"wpsec": 0.1, "quantifier_ratio": 0.1}
+        # High speaking rate and quantifiers
+        high_features = {"wpsec": 0.9, "quantifier_ratio": 0.9}
 
         low_score = scorer.score(low_features, normalize=False)
         high_score = scorer.score(high_features, normalize=False)
 
-        # Higher positive emotion should increase excited score
+        # Higher wpsec/quantifiers should increase scores (all traits in Table 6)
+        assert high_score.overall > low_score.overall
         assert high_score.excited > low_score.excited
 
     def test_negative_features_decrease_score(self, scorer):
