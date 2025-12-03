@@ -77,6 +77,69 @@ Where:
 
 *Negative values should be clipped to 0 for ratio features.
 
+### 3.5 Lexical Feature 평가 기준 (Good/Bad Judgment)
+
+SVR 모델 가중치 방향에 따른 특성별 평가 기준입니다.
+
+#### 가중치 방향 (Weight Direction)
+
+| 방향 | Features | 해석 |
+|------|----------|------|
+| **양수 (+)** | wpsec, upsec, quantifier, we, work, adverb, preposition | z↑ = 점수↑ (높을수록 좋음) |
+| **음수 (-)** | fpsec | z↓ = 점수↑ (낮을수록 좋음) |
+
+> ⚠️ **핵심**: `fpsec`만 유일하게 **낮을수록 좋음** (필러가 적다 = 유창함)
+
+#### 평가 기준표 (Evaluation Thresholds)
+
+| Feature | 미흡 (z<-1) | 평균 (-1≤z≤+1) | 우수 (z>+1) | 평가 방향 |
+|---------|-------------|----------------|-------------|----------|
+| wpsec | < 2.28 words/s | 2.28 ~ 3.44 | > 3.44 words/s | ↑ 높을수록 좋음 |
+| upsec | < 1.02 words/s | 1.02 ~ 1.54 | > 1.54 words/s | ↑ 높을수록 좋음 |
+| **fpsec** | **> 0.39** ❌ | 0.18 ~ 0.39 | **< 0.18** ✅ | ↓ **낮을수록 좋음** |
+| quantifier_ratio | < 0.18 | 0.18 ~ 0.26 | > 0.26 | ↑ 높을수록 좋음 |
+| we_ratio | - | ≈ 0 (대부분) | > 0.005 | ↑ (희소, 한국어 특성) |
+| work_ratio | < 0.09 | 0.09 ~ 0.15 | > 0.15 | ↑ 높을수록 좋음 |
+| adverb_ratio | < 0.03 | 0.03 ~ 0.08 | > 0.08 | ↑ 높을수록 좋음 |
+| preposition_ratio | < 0.03 | 0.03 ~ 0.06 | > 0.06 | ↑ 높을수록 좋음 |
+
+#### 평가 코드 예시
+
+```python
+from ko_liwc.scoring.normalizer import DEFAULT_FEATURE_STATS
+
+# 음수 가중치 특성 (낮을수록 좋음)
+NEGATIVE_WEIGHT_FEATURES = {"fpsec"}
+
+def evaluate_feature(name: str, z_score: float) -> str:
+    """Z-Score 기반 특성 평가 (가중치 방향 고려)"""
+
+    # fpsec은 방향 반전 (낮을수록 좋음)
+    if name in NEGATIVE_WEIGHT_FEATURES:
+        if z_score < -1:
+            return "우수 ✅"  # 필러 적음
+        elif z_score > 1:
+            return "미흡 ❌"  # 필러 많음
+        else:
+            return "평균"
+    else:
+        # 나머지 7개: 높을수록 좋음
+        if z_score > 1:
+            return "우수 ✅"
+        elif z_score < -1:
+            return "미흡 ❌"
+        else:
+            return "평균"
+
+# 사용 예시
+z_scores = {"wpsec": 1.5, "fpsec": -0.8, "work_ratio": 0.3}
+for name, z in z_scores.items():
+    print(f"{name}: z={z:.2f} → {evaluate_feature(name, z)}")
+# wpsec: z=1.50 → 우수 ✅
+# fpsec: z=-0.80 → 평균
+# work_ratio: z=0.30 → 평균
+```
+
 ## 4. Feature Distribution Visualization
 
 ### 4.1 Speaking Rate Features
