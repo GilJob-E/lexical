@@ -17,6 +17,7 @@ from ko_liwc.models.scores import InterviewScore
 from ko_liwc.analyzer import InterviewAnalyzer, AnalysisResult, analyze
 from ko_liwc.core.tokenizer import KiwiTokenizer
 from ko_liwc.scoring.scorer import InterviewScorer
+from ko_liwc.scoring.normalizer import ZScoreNormalizer
 
 __version__ = "0.1.0"
 __all__ = [
@@ -32,4 +33,5 @@ __all__ = [
     # Core components
     "KiwiTokenizer",
     "InterviewScorer",
+    "ZScoreNormalizer",
 ]
