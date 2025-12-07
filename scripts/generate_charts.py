@@ -1,12 +1,13 @@
 """Generate visualization charts for feature statistics.
 
-Creates 6 PNG charts for documentation:
+Creates 4 PNG charts for documentation (Tier 1 features only):
 1. feature_means.png - Horizontal bar chart with error bars
 2. feature_distributions.png - Box plot with percentiles
 3. zscore_interpretation.png - Z-Score interpretation guide
 4. speaking_rate_dist.png - Speaking rate distribution curves
-5. lexical_ratios_dist.png - Lexical ratio distribution curves
-6. korean_findings.png - Korean language findings comparison
+
+Note: Only Tier 1 features (wpsec, upsec, fpsec, quantifier_ratio) are used.
+These appear in Top 20 for ALL 5 traits in Naim et al. (2018).
 """
 
 import json
@@ -20,9 +21,9 @@ OUTPUT_DIR = Path(__file__).parent.parent / "docs" / "images"
 STATS_FILE = Path(__file__).parent.parent / "ko_liwc" / "data" / "feature_statistics.json"
 DPI = 150
 
-# Feature categories
+# Feature categories (Tier 1 only)
 SPEAKING_RATE_FEATURES = ["wpsec", "upsec", "fpsec"]
-LEXICAL_FEATURES = ["quantifier_ratio", "we_ratio", "work_ratio", "adverb_ratio", "preposition_ratio"]
+LEXICAL_FEATURES = ["quantifier_ratio"]  # Only Tier 1 lexical feature
 
 # Colors
 COLORS = {
@@ -32,16 +33,12 @@ COLORS = {
     "neutral": "#95a5a6",        # Gray
 }
 
-# Feature display names
+# Feature display names (Tier 1 only)
 FEATURE_NAMES = {
     "wpsec": "Words/sec",
     "upsec": "Unique words/sec",
     "fpsec": "Fillers/sec",
     "quantifier_ratio": "Quantifier ratio",
-    "we_ratio": "We ratio",
-    "work_ratio": "Work ratio",
-    "adverb_ratio": "Adverb ratio",
-    "preposition_ratio": "Preposition ratio",
 }
 
 
@@ -263,114 +260,6 @@ def plot_speaking_rate_dist(stats: Dict[str, Any]) -> None:
     print("✓ Created speaking_rate_dist.png")
 
 
-def plot_lexical_ratios_dist(stats: Dict[str, Any]) -> None:
-    """Chart 5: Lexical ratio features distribution curves."""
-    fig, axes = plt.subplots(2, 3, figsize=(14, 8))
-    axes = axes.flatten()
-
-    statistics = stats["statistics"]
-
-    for i, feat in enumerate(LEXICAL_FEATURES):
-        ax = axes[i]
-        s = statistics[feat]
-        mean, std = s["mean"], s["std"]
-        p = s["percentiles"]
-
-        # Generate normal distribution curve
-        x = np.linspace(max(0, mean - 4*std), mean + 4*std, 200)
-        y = (1 / (std * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((x - mean) / std) ** 2)
-
-        ax.fill_between(x, y, alpha=0.3, color=COLORS["lexical"])
-        ax.plot(x, y, color=COLORS["lexical"], linewidth=2)
-
-        # Percentile lines
-        for pval, pname in [(p["p5"], "P5"), (p["p50"], "P50"), (p["p95"], "P95")]:
-            ax.axvline(pval, color='gray', linestyle='--', alpha=0.7)
-
-        # Mean line
-        ax.axvline(mean, color=COLORS["highlight"], linewidth=2)
-
-        ax.set_xlabel('Value')
-        ax.set_ylabel('Density')
-        ax.set_title(f'{FEATURE_NAMES[feat]}\n(μ={mean:.4f}, σ={std:.4f})')
-
-    # Hide the 6th subplot
-    axes[5].axis('off')
-
-    fig.suptitle('Lexical Ratio Features Distribution (Normal approximation)', fontsize=12, y=1.02)
-    plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / "lexical_ratios_dist.png", dpi=DPI, bbox_inches='tight')
-    plt.close()
-    print("✓ Created lexical_ratios_dist.png")
-
-
-def plot_korean_findings(stats: Dict[str, Any]) -> None:
-    """Chart 6: Korean language characteristics findings."""
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-
-    statistics = stats["statistics"]
-
-    # Left: we_ratio distribution (special case - mostly zeros)
-    ax1 = axes[0]
-    we_stats = statistics["we_ratio"]
-
-    # Bar chart showing percentiles
-    percentile_labels = ['P5', 'P25', 'P50', 'P75', 'P95', 'Mean']
-    percentile_values = [
-        we_stats["percentiles"]["p5"],
-        we_stats["percentiles"]["p25"],
-        we_stats["percentiles"]["p50"],
-        we_stats["percentiles"]["p75"],
-        we_stats["percentiles"]["p95"],
-        we_stats["mean"]
-    ]
-
-    colors = [COLORS["neutral"]] * 5 + [COLORS["highlight"]]
-    bars = ax1.bar(percentile_labels, percentile_values, color=colors, alpha=0.8)
-
-    # Add value labels
-    for bar, val in zip(bars, percentile_values):
-        ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.0005,
-                f'{val:.4f}', ha='center', va='bottom', fontsize=9)
-
-    ax1.set_ylabel('Ratio')
-    ax1.set_title('we_ratio: Korean Interview Characteristic\n(P50=0, Most samples have no "we" usage)')
-    ax1.set_ylim(0, max(percentile_values) * 1.3)
-
-    # Annotation
-    ax1.annotate('75% of samples\nhave we_ratio = 0',
-                xy=(2, 0), xytext=(3.5, 0.004),
-                arrowprops=dict(arrowstyle='->', color='gray'),
-                fontsize=10, ha='center')
-
-    # Right: Speaking rate comparison
-    ax2 = axes[1]
-
-    features = ['wpsec', 'upsec', 'fpsec']
-    means = [statistics[f]["mean"] for f in features]
-    stds = [statistics[f]["std"] for f in features]
-
-    x_pos = np.arange(len(features))
-    bars = ax2.bar(x_pos, means, yerr=stds, color=COLORS["speaking_rate"],
-                   alpha=0.8, capsize=5)
-
-    ax2.set_xticks(x_pos)
-    ax2.set_xticklabels([FEATURE_NAMES[f] for f in features])
-    ax2.set_ylabel('Per second')
-    ax2.set_title('Speaking Rate Features\n(Korean agglutinative language characteristics)')
-
-    # Add reference annotation
-    ax2.annotate('Korean speakers average\n~2.86 words/second',
-                xy=(0, means[0]), xytext=(1.5, means[0] + 1),
-                arrowprops=dict(arrowstyle='->', color='gray'),
-                fontsize=10, ha='center')
-
-    fig.suptitle('Korean Language Characteristics in Interview Data\n(n=76,100 samples)',
-                fontsize=12, y=1.02)
-    plt.tight_layout()
-    plt.savefig(OUTPUT_DIR / "korean_findings.png", dpi=DPI, bbox_inches='tight')
-    plt.close()
-    print("✓ Created korean_findings.png")
 
 
 def main():
@@ -383,15 +272,13 @@ def main():
 
     setup_style()
 
-    print("\nGenerating charts...")
+    print("\nGenerating charts (Tier 1 features only)...")
     plot_feature_means(stats)
     plot_feature_distributions(stats)
     plot_zscore_interpretation(stats)
     plot_speaking_rate_dist(stats)
-    plot_lexical_ratios_dist(stats)
-    plot_korean_findings(stats)
 
-    print(f"\n✅ All 6 charts generated in {OUTPUT_DIR}")
+    print(f"\n✅ All 4 charts generated in {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":
