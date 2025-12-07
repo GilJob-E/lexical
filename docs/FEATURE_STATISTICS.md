@@ -12,7 +12,9 @@ Statistics calculated from 76,100 Korean interview samples for ko-liwc feature e
 | Generated | 2025-12-02 |
 | Source | Korean interview transcripts |
 
-## 2. Target Features (8 Features from Naim et al. 2018)
+## 2. Target Features (4 Tier 1 Features from Naim et al. 2018)
+
+> **Note:** Only Tier 1 features are used for scoring. These appear in Top 20 for ALL 5 traits.
 
 ### 2.1 Statistics Summary Table
 
@@ -22,10 +24,6 @@ Statistics calculated from 76,100 Korean interview samples for ko-liwc feature e
 | upsec | 1.281 | 0.258 | 0.485 | 3.673 | 0.899 | 1.256 | 1.732 |
 | fpsec | 0.289 | 0.104 | 0.000 | 0.759 | 0.134 | 0.281 | 0.470 |
 | quantifier_ratio | 0.221 | 0.039 | 0.041 | 0.400 | 0.159 | 0.220 | 0.284 |
-| we_ratio | 0.001 | 0.004 | 0.000 | 0.061 | 0.000 | 0.000 | 0.009 |
-| work_ratio | 0.116 | 0.031 | 0.000 | 0.290 | 0.069 | 0.114 | 0.170 |
-| adverb_ratio | 0.055 | 0.022 | 0.000 | 0.211 | 0.021 | 0.053 | 0.093 |
-| preposition_ratio | 0.042 | 0.015 | 0.000 | 0.124 | 0.018 | 0.041 | 0.068 |
 
 ### 2.2 Feature Mean ± Standard Deviation
 
@@ -70,12 +68,6 @@ Where:
 | upsec | 1.281 | 0.258 | 0.77 | 1.02 | 1.54 | 1.80 |
 | fpsec | 0.289 | 0.104 | 0.08 | 0.18 | 0.39 | 0.50 |
 | quantifier_ratio | 0.221 | 0.039 | 0.14 | 0.18 | 0.26 | 0.30 |
-| we_ratio | 0.001 | 0.004 | -0.01* | -0.00 | 0.01 | 0.01 |
-| work_ratio | 0.116 | 0.031 | 0.05 | 0.09 | 0.15 | 0.18 |
-| adverb_ratio | 0.055 | 0.022 | 0.01 | 0.03 | 0.08 | 0.10 |
-| preposition_ratio | 0.042 | 0.015 | 0.01 | 0.03 | 0.06 | 0.07 |
-
-*Negative values should be clipped to 0 for ratio features.
 
 ### 3.5 Lexical Feature 평가 기준 (Good/Bad Judgment)
 
@@ -85,7 +77,7 @@ SVR 모델 가중치 방향에 따른 특성별 평가 기준입니다.
 
 | 방향 | Features | 해석 |
 |------|----------|------|
-| **양수 (+)** | wpsec, upsec, quantifier, we, work, adverb, preposition | z↑ = 점수↑ (높을수록 좋음) |
+| **양수 (+)** | wpsec, upsec, quantifier_ratio | z↑ = 점수↑ (높을수록 좋음) |
 | **음수 (-)** | fpsec | z↓ = 점수↑ (낮을수록 좋음) |
 
 > ⚠️ **핵심**: `fpsec`만 유일하게 **낮을수록 좋음** (필러가 적다 = 유창함)
@@ -98,10 +90,6 @@ SVR 모델 가중치 방향에 따른 특성별 평가 기준입니다.
 | upsec | < 1.02 words/s | 1.02 ~ 1.54 | > 1.54 words/s | ↑ 높을수록 좋음 |
 | **fpsec** | **> 0.39** ❌ | 0.18 ~ 0.39 | **< 0.18** ✅ | ↓ **낮을수록 좋음** |
 | quantifier_ratio | < 0.18 | 0.18 ~ 0.26 | > 0.26 | ↑ 높을수록 좋음 |
-| we_ratio | - | ≈ 0 (대부분) | > 0.005 | ↑ (희소, 한국어 특성) |
-| work_ratio | < 0.09 | 0.09 ~ 0.15 | > 0.15 | ↑ 높을수록 좋음 |
-| adverb_ratio | < 0.03 | 0.03 ~ 0.08 | > 0.08 | ↑ 높을수록 좋음 |
-| preposition_ratio | < 0.03 | 0.03 ~ 0.06 | > 0.06 | ↑ 높을수록 좋음 |
 
 #### 평가 코드 예시
 
@@ -123,7 +111,7 @@ def evaluate_feature(name: str, z_score: float) -> str:
         else:
             return "평균"
     else:
-        # 나머지 7개: 높을수록 좋음
+        # 나머지 3개 (wpsec, upsec, quantifier_ratio): 높을수록 좋음
         if z_score > 1:
             return "우수 ✅"
         elif z_score < -1:
@@ -132,12 +120,12 @@ def evaluate_feature(name: str, z_score: float) -> str:
             return "평균"
 
 # 사용 예시
-z_scores = {"wpsec": 1.5, "fpsec": -0.8, "work_ratio": 0.3}
+z_scores = {"wpsec": 1.5, "fpsec": -0.8, "quantifier_ratio": 0.3}
 for name, z in z_scores.items():
     print(f"{name}: z={z:.2f} → {evaluate_feature(name, z)}")
 # wpsec: z=1.50 → 우수 ✅
 # fpsec: z=-0.80 → 평균
-# work_ratio: z=0.30 → 평균
+# quantifier_ratio: z=0.30 → 평균
 ```
 
 ## 4. Feature Distribution Visualization
@@ -151,50 +139,31 @@ for name, z in z_scores.items():
 - **upsec (Unique words per second)**: Mean 1.28, tight distribution
 - **fpsec (Fillers per second)**: Mean 0.29, right-skewed (some samples have no fillers)
 
-### 4.2 Lexical Ratio Features
-
-![Lexical Ratios Distribution](images/lexical_ratios_dist.png)
+### 4.2 Lexical Feature: Quantifier Ratio
 
 **Observations:**
-- **quantifier_ratio**: Highest mean (0.22), consistent across samples
-- **we_ratio**: Very low mean (0.001), most samples have 0
-- **work_ratio**: Second highest (0.12), work-related vocabulary common in interviews
-- **adverb_ratio**: Moderate (0.05), consistent distribution
-- **preposition_ratio**: Lower (0.04), agglutinative language characteristic
+- **quantifier_ratio**: Mean 0.22, consistent across samples
+- Includes words like "많이" (many), "조금" (little), "모든" (all)
+- Common in interview explanations and descriptions
 
 ## 5. Korean Language Characteristics
 
-### 5.1 Key Findings Visualization
+### 5.1 Speaking Rate (wpsec = 2.86 words/sec)
 
-![Korean Findings](images/korean_findings.png)
-
-### 5.2 Analysis
-
-#### 5.2.1 Speaking Rate (wpsec = 2.86 words/sec)
-
-Korean speakers in interviews average approximately 2.86 words per second. This is higher than typical English interview data due to:
+Korean speakers in interviews average approximately 2.86 words per second. This is influenced by:
 
 1. **Agglutinative Language**: Korean attaches multiple morphemes to word stems
 2. **Word Boundary Definition**: Depends on tokenization method
 3. **Interview Context**: Formal speech tends to be more measured
 
-#### 5.2.2 First Person Plural Pronoun (we_ratio = 0.001)
-
-The extremely low `we_ratio` is a distinctive characteristic of Korean interview data:
-
-- **P50 (Median) = 0**: Most samples have zero "we" usage
-- **P75 = 0**: 75% of samples have no "we" pronouns
-- **Cultural Factor**: Korean interviews emphasize individual rather than collective framing
-- **Pronoun Drop**: Korean frequently omits pronouns when context is clear
-
-#### 5.2.3 Filler Rate (fpsec = 0.29/sec)
+### 5.2 Filler Rate (fpsec = 0.29/sec)
 
 Filler usage patterns:
 - Mean of 0.29 fillers per second
 - Higher rates may indicate hesitation or cognitive load
 - Lower rates in rehearsed or scripted responses
 
-#### 5.2.4 Quantifier Ratio (quantifier_ratio = 0.22)
+### 5.3 Quantifier Ratio (quantifier_ratio = 0.22)
 
 Higher than expected quantifier usage:
 - Includes words like "많이" (many), "조금" (little), "모든" (all)

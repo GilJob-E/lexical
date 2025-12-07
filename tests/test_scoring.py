@@ -195,7 +195,10 @@ class TestWeights:
             get_trait_weights("invalid_trait")
 
     def test_get_top_features(self):
-        """Test getting top important features."""
-        top = get_top_features(5)
-        assert len(top) == 5
+        """Test getting top important features (4 Tier 1 features)."""
+        top = get_top_features(4)
+        assert len(top) == 4
         assert all(isinstance(f, str) for f in top)
+        # Verify all Tier 1 features are included
+        expected = {"wpsec", "upsec", "fpsec", "quantifier_ratio"}
+        assert set(top) == expected

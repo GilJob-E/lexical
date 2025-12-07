@@ -4,8 +4,12 @@ Based on Table 6 of Naim et al. (2018):
 - SVR model weights for top 20 features per trait
 - Only lexical features are used (Prosodic/Facial excluded)
 
-IMPORTANT: Table 6 shows only TOP 20 features per trait.
-Features NOT in Top 20 have weight=0 (not predictive enough).
+IMPORTANT: Only Tier 1 features (4 features) are used for scoring:
+- wpsec, upsec, fpsec, quantifier_ratio
+These appear in Top 20 for ALL 5 traits.
+
+Tier 2 features (we_ratio, work_ratio, adverb_ratio, preposition_ratio)
+are excluded as they only appear in Top 20 for some traits.
 
 Reference: "Automated Analysis and Prediction of Job Interview Performance"
 IEEE Transactions on Affective Computing, 2018
@@ -27,20 +31,20 @@ TRAIT_NAMES = [
 # Features NOT in Top 20 for a trait have weight=0
 FEATURE_WEIGHTS: Dict[str, Dict[str, float]] = {
     "overall": {
-        # Table 6 Top 20 Lexical features for Overall:
-        # wpsec(0.11), upsec(0.093), Fillers(-0.086), Quantifiers(0.086), We(0.067)
+        # Tier 1 features only (appear in Top 20 for all traits)
+        # wpsec(0.11), upsec(0.093), Fillers(-0.086), Quantifiers(0.086)
 
-        # Speaking rate (in Top 20)
+        # Speaking rate (Tier 1)
         "wpsec": 0.11,
         "upsec": 0.093,
         "fpsec": -0.086,  # "Fillers" in Table 6
-        "wc": 0.0,        # Not in Top 20
-        "uc": 0.0,        # Not in Top 20
+        "wc": 0.0,
+        "uc": 0.0,
 
-        # Pronouns
-        "i_ratio": 0.0,       # Not in Top 20
-        "we_ratio": 0.067,    # In Top 20
-        "they_ratio": 0.0,    # Not in Top 20
+        # Pronouns (Tier 2 excluded)
+        "i_ratio": 0.0,
+        "we_ratio": 0.0,      # Tier 2 - excluded
+        "they_ratio": 0.0,
 
         # POS features (none in Top 20 for Overall)
         "article_ratio": 0.0,
@@ -72,47 +76,46 @@ FEATURE_WEIGHTS: Dict[str, Dict[str, float]] = {
     },
 
     "recommend_hiring": {
-        # Table 6 Top 20 Lexical features for RecommendHiring:
-        # wpsec(0.139), Fillers(-0.130), upsec(0.098), Quantifiers(0.109),
-        # Work(0.072), We(0.067), Adverbs(0.066), Prepositions(0.066)
+        # Tier 1 features only (appear in Top 20 for all traits)
+        # wpsec(0.139), Fillers(-0.130), upsec(0.098), Quantifiers(0.109)
 
-        # Speaking rate
+        # Speaking rate (Tier 1)
         "wpsec": 0.139,
         "upsec": 0.098,
         "fpsec": -0.130,  # "Fillers" in Table 6
         "wc": 0.0,
         "uc": 0.0,
 
-        # Pronouns
+        # Pronouns (Tier 2 excluded)
         "i_ratio": 0.0,
-        "we_ratio": 0.067,    # In Top 20
+        "we_ratio": 0.0,      # Tier 2 - excluded
         "they_ratio": 0.0,
 
-        # POS features
+        # POS features (Tier 2 excluded)
         "article_ratio": 0.0,
         "verb_ratio": 0.0,
-        "adverb_ratio": 0.066,      # In Top 20
-        "preposition_ratio": 0.066,  # In Top 20
+        "adverb_ratio": 0.0,       # Tier 2 - excluded
+        "preposition_ratio": 0.0,  # Tier 2 - excluded
         "conjunction_ratio": 0.0,
         "number_ratio": 0.0,
 
-        # Emotion (none in Top 20 for RecommendHiring)
+        # Emotion
         "pos_emotion_ratio": 0.0,
         "neg_emotion_ratio": 0.0,
         "anxiety_ratio": 0.0,
         "anger_ratio": 0.0,
         "sadness_ratio": 0.0,
 
-        # Cognitive (none in Top 20 for RecommendHiring)
+        # Cognitive
         "cognitive_ratio": 0.0,
         "inhibition_ratio": 0.0,
         "perceptual_ratio": 0.0,
 
-        # Misc
+        # Misc (Tier 1: quantifier_ratio only)
         "nonfluency_ratio": 0.0,
         "negation_ratio": 0.0,
-        "quantifier_ratio": 0.109,  # In Top 20
-        "work_ratio": 0.072,        # In Top 20
+        "quantifier_ratio": 0.109,  # Tier 1
+        "work_ratio": 0.0,          # Tier 2 - excluded
         "relativity_ratio": 0.0,
         "swear_ratio": 0.0,
     },
@@ -257,41 +260,13 @@ FEATURE_WEIGHTS: Dict[str, Dict[str, float]] = {
 }
 
 # Feature importance rankings based on Table 6
-# Only features that appear in Top 20 for any trait
+# Only Tier 1 features (appear in Top 20 for ALL 5 traits) are used for scoring
 FEATURE_IMPORTANCE: Dict[str, int] = {
-    # Tier 1: Appear in Top 20 for all 5 traits
+    # Tier 1: Appear in Top 20 for all 5 traits - USED FOR SCORING
     "wpsec": 10,
     "upsec": 10,
     "fpsec": 10,
     "quantifier_ratio": 10,
-
-    # Tier 2: Appear in Top 20 for some traits
-    "we_ratio": 7,          # Overall, RecommendHiring
-    "work_ratio": 6,        # RecommendHiring only
-    "adverb_ratio": 5,      # RecommendHiring only
-    "preposition_ratio": 5,  # RecommendHiring only
-
-    # Tier 3: Not in Top 20 but still computed
-    "wc": 2,
-    "uc": 2,
-    "i_ratio": 2,
-    "they_ratio": 1,
-    "article_ratio": 1,
-    "verb_ratio": 1,
-    "conjunction_ratio": 1,
-    "number_ratio": 1,
-    "pos_emotion_ratio": 1,
-    "neg_emotion_ratio": 1,
-    "anxiety_ratio": 1,
-    "anger_ratio": 1,
-    "sadness_ratio": 1,
-    "cognitive_ratio": 1,
-    "inhibition_ratio": 1,
-    "perceptual_ratio": 1,
-    "nonfluency_ratio": 1,
-    "negation_ratio": 1,
-    "relativity_ratio": 1,
-    "swear_ratio": 1,
 }
 
 

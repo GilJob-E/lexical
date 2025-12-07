@@ -1,7 +1,9 @@
 """Feature statistics calculation from interview dataset.
 
-Calculates mean, std, min, max, percentiles for 8 target features
+Calculates mean, std, min, max, percentiles for 4 Tier 1 features
 using Welford's algorithm for streaming computation.
+
+Tier 1 features appear in Top 20 for ALL 5 traits in Naim et al. (2018).
 """
 
 import json
@@ -14,16 +16,13 @@ from datetime import datetime
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
 
-# Target features from Naim et al. (2018) Table 6
+# Tier 1 features from Naim et al. (2018) Table 6
+# These appear in Top 20 for ALL 5 traits
 TARGET_FEATURES = [
     "wpsec",           # words per second
     "upsec",           # unique words per second
     "fpsec",           # fillers per second
     "quantifier_ratio",
-    "we_ratio",
-    "work_ratio",
-    "adverb_ratio",
-    "preposition_ratio",
 ]
 
 

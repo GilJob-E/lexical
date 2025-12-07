@@ -45,15 +45,11 @@ def main():
         print(f"  Engagement:       {result.scores.engagement:.1f}")
         print(f"  Friendliness:     {result.scores.friendliness:.1f}")
 
-        print(f"\n📈 Target Lexical Features (8개)")
+        print(f"\n📈 Target Features (4개 Tier 1)")
         print(f"  wpsec (단어/초):        {result.features['wpsec']:.3f}")
         print(f"  upsec (고유단어/초):    {result.features['upsec']:.3f}")
         print(f"  fpsec (필러/초):        {result.features['fpsec']:.3f}")
         print(f"  quantifier_ratio:       {result.features['quantifier_ratio']:.3f}")
-        print(f"  we_ratio:               {result.features['we_ratio']:.3f}")
-        print(f"  work_ratio:             {result.features['work_ratio']:.3f}")
-        print(f"  adverb_ratio:           {result.features['adverb_ratio']:.3f}")
-        print(f"  preposition_ratio:      {result.features['preposition_ratio']:.3f}")
 
 
 if __name__ == "__main__":

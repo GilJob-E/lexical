@@ -45,9 +45,9 @@ print(f"Recommend Hiring: {result.scores.recommend_hiring:.1f}")
 
 ## 추출 특성
 
-### Target Features (8개) - 점수 예측에 사용
+### Target Features (4개 Tier 1) - 점수 예측에 사용
 
-논문(Naim et al. 2018) SVR 모델의 Top 20에 포함된 핵심 특성입니다.
+논문(Naim et al. 2018) SVR 모델에서 **모든 5개 trait의 Top 20**에 포함된 핵심 특성입니다.
 
 | 특성 | 설명 | 카테고리 |
 |------|------|----------|
@@ -55,10 +55,6 @@ print(f"Recommend Hiring: {result.scores.recommend_hiring:.1f}")
 | upsec | 초당 고유 형태소 수 | Speaking Rate |
 | fpsec | 초당 필러 수 | Speaking Rate |
 | quantifier_ratio | 수량사 비율 | Lexical |
-| we_ratio | 1인칭 복수 대명사 비율 | Pronoun |
-| work_ratio | 업무 관련어 비율 | Lexical |
-| adverb_ratio | 부사 비율 | POS |
-| preposition_ratio | 부사격 조사 비율 | POS |
 
 > 📊 **통계 분석**: [docs/FEATURE_STATISTICS.md](docs/FEATURE_STATISTICS.md) - 76,100개 샘플 기반 분포 및 Z-Score 해석
 >
@@ -211,10 +207,6 @@ z_scores = normalizer.transform(features)
 | upsec | 1.281 | 0.258 |
 | fpsec | 0.289 | 0.104 |
 | quantifier_ratio | 0.221 | 0.039 |
-| we_ratio | 0.001 | 0.004 |
-| work_ratio | 0.116 | 0.031 |
-| adverb_ratio | 0.055 | 0.022 |
-| preposition_ratio | 0.042 | 0.015 |
 
 > 상세 통계 및 시각화는 [docs/FEATURE_STATISTICS.md](docs/FEATURE_STATISTICS.md) 참조
 

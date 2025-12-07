@@ -375,16 +375,12 @@ DEFAULT_FEATURE_RANGES: Dict[str, tuple] = {
 # Default Z-Score statistics from 76,100 interview samples
 # Calculated from test_data dataset (2025-12-02)
 # Used by ZScoreNormalizer for paper-aligned normalization
+# Only Tier 1 features (appear in Top 20 for ALL 5 traits)
 DEFAULT_FEATURE_STATS: Dict[str, Dict[str, float]] = {
-    # Speaking rate features (per second)
+    # Speaking rate features (Tier 1)
     "wpsec": {"mean": 2.859325, "std": 0.577577},       # Words per second
     "upsec": {"mean": 1.281169, "std": 0.258322},       # Unique words per second
     "fpsec": {"mean": 0.289408, "std": 0.104311},       # Fillers per second
-
-    # LIWC/Lexical ratios (8 target features from Naim et al. 2018)
+    # Lexical ratio (Tier 1)
     "quantifier_ratio": {"mean": 0.220574, "std": 0.038633},
-    "we_ratio": {"mean": 0.001420, "std": 0.003710},
-    "work_ratio": {"mean": 0.116011, "std": 0.030881},
-    "adverb_ratio": {"mean": 0.054698, "std": 0.022357},
-    "preposition_ratio": {"mean": 0.042055, "std": 0.015245},
 }
