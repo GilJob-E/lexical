@@ -95,7 +95,6 @@ examples/
 *.pth
 *.onnx
 data/
-models/
 *.model
 
 # ===== Audio/Video (for multimodal integration) =====
